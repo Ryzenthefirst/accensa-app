@@ -2,11 +2,7 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  EvidenceUpload,
-  MAX_EVIDENCE_BYTES,
-  validateEvidenceFile,
-} from './EvidenceUpload';
+import { EvidenceUpload, MAX_EVIDENCE_BYTES, validateEvidenceFile } from './EvidenceUpload';
 
 describe('validateEvidenceFile', () => {
   it('returns the type message for text/plain', () => {
@@ -126,9 +122,7 @@ describe('EvidenceUpload component', () => {
       expect(screen.getByRole('status').textContent).toBe('Pinning evidence...');
     });
 
-    resolveInFlight(
-      new Response(JSON.stringify({ cid: 'bafy-flight-cid' }), { status: 200 }),
-    );
+    resolveInFlight(new Response(JSON.stringify({ cid: 'bafy-flight-cid' }), { status: 200 }));
 
     await waitFor(() => {
       expect(screen.getByRole('status').textContent).toBe('Evidence pinned successfully.');
@@ -181,9 +175,7 @@ describe('EvidenceUpload component', () => {
       new Response(JSON.stringify({ cid: 'cid-qwerty-123' }), { status: 200 }),
     );
 
-    const { rerender } = render(
-      <EvidenceUpload disputeId="dispute-5" onUploaded={onUploaded} />,
-    );
+    const { rerender } = render(<EvidenceUpload disputeId="dispute-5" onUploaded={onUploaded} />);
 
     const validFile1 = new File(['pdf data'], 'doc1.pdf', {
       type: 'application/pdf',

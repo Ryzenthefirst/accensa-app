@@ -45,7 +45,9 @@ class MockIntersectionObserver implements IntersectionObserver {
     return [];
   }
 
-  simulateEntry(entry: Partial<IntersectionObserverEntry> & { isIntersecting: boolean; target?: Element }) {
+  simulateEntry(
+    entry: Partial<IntersectionObserverEntry> & { isIntersecting: boolean; target?: Element },
+  ) {
     const target = entry.target ?? this.observeCalls[0];
     const constructedEntry = {
       time: Date.now(),
