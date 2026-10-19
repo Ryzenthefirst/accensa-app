@@ -65,13 +65,23 @@ const STORED = {
   eventFilter: 'all',
 };
 
+// The handlers' inferred return type includes `undefined`; a real call never
+// returns it, so narrow once here instead of at every assertion.
+async function respond(pending: Promise<Response | undefined>): Promise<Response> {
+  const res = await pending;
+  if (!res) throw new Error('handler returned no response');
+  return res;
+}
+
 function patch(body: unknown) {
-  return PATCH(
-    new Request(URL_, {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
-      body: typeof body === 'string' ? body : JSON.stringify(body),
-    }),
+  return respond(
+    PATCH(
+      new Request(URL_, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: typeof body === 'string' ? body : JSON.stringify(body),
+      }),
+    ),
   );
 }
 
@@ -102,7 +112,7 @@ describe('/api/merchant/settings/notifications', () => {
 
   describe('GET', () => {
     test('returns the public projection and strips secret material', async () => {
-      const res = await GET(new Request(URL_));
+      const res = await respond(GET(new Request(URL_)));
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(body).toEqual({
@@ -121,7 +131,7 @@ describe('/api/merchant/settings/notifications', () => {
 
     test('returns 500 when DATABASE_URL is not configured', async () => {
       delete process.env.DATABASE_URL;
-      const res = await GET(new Request(URL_));
+      const res = await respond(GET(new Request(URL_)));
       expect(res.status).toBe(500);
       expect(await res.json()).toEqual({ error: 'DATABASE_URL is not configured' });
       expect(mockGetConfig).not.toHaveBeenCalled();
